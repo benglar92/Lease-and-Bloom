@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lease & Bloom</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cream: #f4f6f2;
+      --blush: #c8d8c4;
+      --rose: #5a8a5a;
+      --sage: #7a9e7a;
+      --sage-dark: #3d6b3d;
+      --gold: #8a9e8a;
+      --brown: #3a4a3a;
+      --white: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--cream);
+      font-family: 'Barlow', sans-serif;
+      color: var(--brown);
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #e8ede6 0%, #d4ddd2 50%, #e8ede6 100%);
+      text-align: center;
+      padding: 60px 20px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '🌸 🌷 🌼 🌺 🌻 🌸 🌷 🌼 🌺 🌻 🌸 🌷 🌼';
+      display: block;
+      font-size: 1.4rem;
+      letter-spacing: 6px;
+      opacity: 0.5;
+      margin-bottom: 20px;
+      animation: floatPetals 6s ease-in-out infinite;
+    }
+
+    @keyframes floatPetals {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      color: var(--brown);
+      line-height: 1.1;
+    }
+
+    header h1 span {
+      color: var(--rose);
+      
+    }
+
+    header p.tagline {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--sage-dark);
+      margin-top: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    /* ── INTRO ── */
+    .intro {
+      max-width: 680px;
+      margin: 50px auto 20px;
+      text-align: center;
+      padding: 0 24px;
+    }
+
+    .intro h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.9rem;
+      margin-bottom: 14px;
+    }
+
+    .intro p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #6b4c3b;
+    }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      text-align: center;
+      margin: 60px 0 30px;
+      color: var(--brown);
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: var(--rose);
+      margin: 12px auto 0;
+      border-radius: 2px;
+    }
+
+    /* ── FILTER TABS ── */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 36px;
+      padding: 0 20px;
+    }
+
+    .filter-btn {
+      background: white;
+      border: 2px solid var(--blush);
+      color: var(--brown);
+      padding: 8px 22px;
+      border-radius: 30px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--rose);
+      border-color: var(--rose);
+      color: white;
+    }
+
+    /* ── GALLERY ── */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 28px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    .flower-card {
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(92,61,46,0.09);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+
+    .flower-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(92,61,46,0.15);
+    }
+
+    .flower-card .emoji-img {
+      font-size: 5rem;
+      background: linear-gradient(135deg, #d4ddd2, #e8ede6);
+      height: 170px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flower-card .card-body {
+      padding: 18px 20px 20px;
+    }
+
+    .flower-card h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.2rem;
+      margin-bottom: 6px;
+    }
+
+    .flower-card p {
+      font-size: 0.88rem;
+      color: #7a5c4e;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #d4ddd2;
+      color: var(--sage-dark);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+
+    .badge.sage { background: #e8f5e9; color: var(--sage-dark); }
+
+    /* ── FORM SECTION ── */
+    .form-section {
+      background: linear-gradient(135deg, #d4ddd2 0%, #c8d0c6 100%);
+      padding: 70px 24px;
+    }
+
+    .form-box {
+      background: white;
+      max-width: 620px;
+      margin: 0 auto;
+      border-radius: 24px;
+      padding: 50px 44px;
+      box-shadow: 0 8px 40px rgba(92,61,46,0.12);
+    }
+
+    .form-box h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.9rem;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .form-box .form-sub {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #7a5c4e;
+      margin-bottom: 36px;
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--brown);
+      margin-bottom: 7px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 2px solid #c8d0c6;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 1rem;
+      color: var(--brown);
+      background: #f4f6f2;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--rose);
+      background: white;
+    }
+
+    textarea { resize: vertical; min-height: 110px; }
+
+    /* ── FLOWER PICKER ── */
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .flower-pick {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 2px solid #c8d0c6;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .flower-pick:hover {
+      border-color: var(--sage);
+      background: #edf2eb;
+    }
+
+    .flower-pick.selected {
+      border-color: var(--rose);
+      background: #e6f0e6;
+    }
+
+    .fp-label {
+      font-size: 0.93rem;
+      font-family: 'Barlow', sans-serif;
+      color: var(--brown);
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: popIn 0.18s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--sage);
+      background: white;
+      color: var(--sage-dark);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+
+    .qty-btn:hover {
+      background: var(--rose);
+      border-color: var(--rose);
+      color: white;
+    }
+
+    .qty-val {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--sage-dark);
+      min-width: 16px;
+      text-align: center;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--rose), #3d6b3d);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(90,138,90,0.4);
+    }
+
+    /* ── SUCCESS MESSAGE ── */
+    .success-msg {
+      display: none;
+      background: #e8f5e9;
+      border: 2px solid var(--sage);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      color: var(--sage-dark);
+      font-size: 1.05rem;
+      margin-top: 20px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--brown);
+      color: #f0ddd6;
+      text-align: center;
+      padding: 36px 20px;
+      font-size: 0.9rem;
+    }
+
+    footer .footer-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.5rem;
+      color: #a8c8a8;
+      
+      margin-bottom: 8px;
+    }
+
+    /* ── HIDDEN for filter ── */
+    .flower-card.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <h1>Lease <span>&</span> Bloom</h1>
+  <p class="tagline">Spring & Summer Flower Selections for Your Home</p>
+</header>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>Welcome! 🌷</h2>
+  <p>This is a new tenant portal and is currently in early testing — so please bear with us as we work out the kinks! Our goal is to create a space where you can browse our available flower selections each spring and summer, and either plant them yourself or have us plant them for you. You are never required to pick anything, but if you do — all flowers are completely free.</p>
+</div>
+
+<!-- GALLERY -->
+<h2 class="section-title">Our Flower Collection</h2>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterFlowers('all', this)">All Flowers</button>
+  <button class="filter-btn" onclick="filterFlowers('spring', this)">🌸 Spring</button>
+  <button class="filter-btn" onclick="filterFlowers('summer', this)">☀️ Summer</button>
+  <button class="filter-btn" onclick="filterFlowers('perennial', this)">🌿 Perennial</button>
+</div>
+
+<div class="gallery">
+
+  <div class="flower-card" data-season="spring">
+    <div class="emoji-img">🌷</div>
+    <div class="card-body">
+      <h3>Tulips</h3>
+      <p>Classic and cheerful, tulips come in a rainbow of colors and are perfect for front beds and window boxes.</p>
+      <span class="badge">Spring</span>
+      <span class="badge sage">Low Maintenance</span>
+    </div>
+  </div>
+
+  <div class="flower-card" data-season="spring">
+    <div class="emoji-img">🌸</div>
+    <div class="card-body">
+      <h3>Cherry Blossoms</h3>
+      <p>Delicate pink blooms that signal the arrival of spring. Beautiful as ornamental shrubs near entryways.</p>
+      <span class="badge">Spring</span>
+    </div>
+  </div>
+
+  <div class="flower-card" data-season="summer">
+    <div class="emoji-img">🌻</div>
+    <div class="card-body">
+      <h3>Sunflowers</h3>
+      <p>Bold and bright, sunflowers add dramatic height and a cheerful pop of yellow to any garden bed.</p>
+      <span class="badge" style="background:#e0ead8;color:#3d6b3d;">Summer</span>
+      <span class="badge sage">Pollinator Friendly</span>
+    </div>
+  </div>
+
+  <div class="flower-card" data-season="summer">
+    <div class="emoji-img">🌺</div>
+    <div class="card-body">
+      <h3>Hibiscus</h3>
+      <p>Tropical and vibrant, hibiscus blooms all summer long in shades of red, pink, and coral.</p>
+      <span class="badge" style="background:#e0ead8;color:#3d6b3d;">Summer</span>
+    </div>
+  </div>
+
+  <div class="flower-card" data-season="perennial">
+    <div class="emoji-img">💐</div>
+    <div class="card-body">
+      <h3>Lavender</h3>
+      <p>Fragrant and elegant, lavender comes back every year and is loved by bees and butterflies.</p>
+      <span class="badge sage">Perennial</span>
+      <span class="badge sage">Pollinator Friendly</span>
+    </div>
+  </div>
+
+  <div class="flower-card" data-season="spring">
+    <div class="emoji-img">🌼</div>
+    <div class="card-body">
+      <h3>Daffodils</h3>
+      <p>One of the first flowers of spring, daffodils are bright yellow and incredibly easy to grow.</p>
+      <span class="badge">Spring</span>
+      <span class="badge sage">Low Maintenance</span>
+    </div>
+  </div>
+
+  <div class="flower-card" data-season="summer">
+    <div class="emoji-img">🪷</div>
+    <div class="card-body">
+      <h3>Peonies</h3>
+      <p>Lush and romantic, peonies are a showstopper with big fluffy blooms in pink, white, and red.</p>
+      <span class="badge" style="background:#e0ead8;color:#3d6b3d;">Summer</span>
+    </div>
+  </div>
+
+  <div class="flower-card" data-season="perennial">
+    <div class="emoji-img">🌿</div>
+    <div class="card-body">
+      <h3>Black-Eyed Susans</h3>
+      <p>A native perennial that blooms all summer with golden petals and a dark center. Zero fuss!</p>
+      <span class="badge sage">Perennial</span>
+      <span class="badge sage">Low Maintenance</span>
+    </div>
+  </div>
+
+  <div class="flower-card" data-season="summer">
+    <div class="emoji-img">🌹</div>
+    <div class="card-body">
+      <h3>Roses</h3>
+      <p>Timeless and romantic, roses are available in dozens of varieties and colors to suit any home.</p>
+      <span class="badge" style="background:#e0ead8;color:#3d6b3d;">Summer</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- REQUEST FORM -->
+<div class="form-section">
+  <div class="form-box">
+    <h2>Request Your Flowers 🌸</h2>
+    <p class="form-sub">Fill out the form below and we'll get your selections ready for the season!</p>
+
+    <form id="requestForm" action="https://formspree.io/f/mnjbgany" method="POST" onsubmit="handleSubmit(event)">
+
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" placeholder="Jane Smith" required />
+      </div>
+
+      <div class="form-group">
+        <label>Unit / Address</label>
+        <input type="text" placeholder="Unit 4B or 123 Maple Street" required />
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="jane@email.com" required />
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number (optional)</label>
+        <input type="tel" placeholder="(555) 123-4567" />
+      </div>
+
+      <div class="form-group">
+        <label>Season</label>
+        <select required>
+          <option value="">Select a season...</option>
+          <option>Spring</option>
+          <option>Summer</option>
+          <option>Both Spring & Summer</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Which flowers would you like? (select all that apply)</label>
+        <div class="checkbox-group">
+          <div class="flower-pick" data-name="Tulips" data-emoji="🌷">
+            <span class="fp-label">🌷 Tulips</span>
+            <div class="qty-control" style="display:none;">
+              <button type="button" class="qty-btn minus">−</button>
+              <span class="qty-val">1</span>
+              <button type="button" class="qty-btn plus">+</button>
+            </div>
+            <input type="hidden" name="Tulips" value="0"/>
+          </div>
+          <div class="flower-pick" data-name="Cherry Blossoms" data-emoji="🌸">
+            <span class="fp-label">🌸 Cherry Blossoms</span>
+            <div class="qty-control" style="display:none;">
+              <button type="button" class="qty-btn minus">−</button>
+              <span class="qty-val">1</span>
+              <button type="button" class="qty-btn plus">+</button>
+            </div>
+            <input type="hidden" name="Cherry Blossoms" value="0"/>
+          </div>
+          <div class="flower-pick" data-name="Sunflowers" data-emoji="🌻">
+            <span class="fp-label">🌻 Sunflowers</span>
+            <div class="qty-control" style="display:none;">
+              <button type="button" class="qty-btn minus">−</button>
+              <span class="qty-val">1</span>
+              <button type="button" class="qty-btn plus">+</button>
+            </div>
+            <input type="hidden" name="Sunflowers" value="0"/>
+          </div>
+          <div class="flower-pick" data-name="Hibiscus" data-emoji="🌺">
+            <span class="fp-label">🌺 Hibiscus</span>
+            <div class="qty-control" style="display:none;">
+              <button type="button" class="qty-btn minus">−</button>
+              <span class="qty-val">1</span>
+              <button type="button" class="qty-btn plus">+</button>
+            </div>
+            <input type="hidden" name="Hibiscus" value="0"/>
+          </div>
+          <div class="flower-pick" data-name="Lavender" data-emoji="💐">
+            <span class="fp-label">💐 Lavender</span>
+            <div class="qty-control" style="display:none;">
+              <button type="button" class="qty-btn minus">−</button>
+              <span class="qty-val">1</span>
+              <button type="button" class="qty-btn plus">+</button>
+            </div>
+            <input type="hidden" name="Lavender" value="0"/>
+          </div>
+          <div class="flower-pick" data-name="Daffodils" data-emoji="🌼">
+            <span class="fp-label">🌼 Daffodils</span>
+            <div class="qty-control" style="display:none;">
+              <button type="button" class="qty-btn minus">−</button>
+              <span class="qty-val">1</span>
+              <button type="button" class="qty-btn plus">+</button>
+            </div>
+            <input type="hidden" name="Daffodils" value="0"/>
+          </div>
+          <div class="flower-pick" data-name="Peonies" data-emoji="🪷">
+            <span class="fp-label">🪷 Peonies</span>
+            <div class="qty-control" style="display:none;">
+              <button type="button" class="qty-btn minus">−</button>
+              <span class="qty-val">1</span>
+              <button type="button" class="qty-btn plus">+</button>
+            </div>
+            <input type="hidden" name="Peonies" value="0"/>
+          </div>
+          <div class="flower-pick" data-name="Roses" data-emoji="🌹">
+            <span class="fp-label">🌹 Roses</span>
+            <div class="qty-control" style="display:none;">
+              <button type="button" class="qty-btn minus">−</button>
+              <span class="qty-val">1</span>
+              <button type="button" class="qty-btn plus">+</button>
+            </div>
+            <input type="hidden" name="Roses" value="0"/>
+          </div>
+          <div class="flower-pick" data-name="Black-Eyed Susans" data-emoji="🌿">
+            <span class="fp-label">🌿 Black-Eyed Susans</span>
+            <div class="qty-control" style="display:none;">
+              <button type="button" class="qty-btn minus">−</button>
+              <span class="qty-val">1</span>
+              <button type="button" class="qty-btn plus">+</button>
+            </div>
+            <input type="hidden" name="Black-Eyed Susans" value="0"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Placement Preference</label>
+        <select>
+          <option value="">Where would you like them?</option>
+          <option>Front yard / garden bed</option>
+          <option>Window boxes</option>
+          <option>Front porch / entryway</option>
+          <option>Backyard</option>
+          <option>Anywhere you think looks best!</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Any Special Requests or Notes?</label>
+        <textarea placeholder="e.g. I love pink flowers, or please avoid anything with strong scents..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit My Flower Request ✨</button>
+
+      <div class="success-msg" id="successMsg">
+        🌸 Thank you! Your flower request has been received. We'll be in touch as the season approaches!
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Lease & Bloom</div>
+  <p>Bringing beauty to every home, one flower at a time 🌷</p>
+</footer>
+
+<script>
+  // Flower picker logic
+  document.querySelectorAll('.flower-pick').forEach(card => {
+    const qtyControl = card.querySelector('.qty-control');
+    const qtyVal = card.querySelector('.qty-val');
+    const hiddenInput = card.querySelector('input[type="hidden"]');
+    const minusBtn = card.querySelector('.minus');
+    const plusBtn = card.querySelector('.plus');
+
+    card.addEventListener('click', function(e) {
+      if (e.target.classList.contains('qty-btn')) return;
+      const isSelected = card.classList.toggle('selected');
+      qtyControl.style.display = isSelected ? 'flex' : 'none';
+      if (isSelected) {
+        qtyVal.textContent = '1';
+        hiddenInput.value = '1';
+      } else {
+        qtyVal.textContent = '1';
+        hiddenInput.value = '0';
+      }
+    });
+
+    minusBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      let val = parseInt(qtyVal.textContent);
+      if (val > 1) {
+        val--;
+        qtyVal.textContent = val;
+        hiddenInput.value = val;
+      } else {
+        // deselect
+        card.classList.remove('selected');
+        qtyControl.style.display = 'none';
+        qtyVal.textContent = '1';
+        hiddenInput.value = '0';
+      }
+    });
+
+    plusBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      let val = parseInt(qtyVal.textContent);
+      if (val < 2) {
+        val++;
+        qtyVal.textContent = val;
+        hiddenInput.value = val;
+      }
+    });
+  });
+
+  function filterFlowers(season, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.flower-card').forEach(card => {
+      if (season === 'all' || card.dataset.season === season) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (response.ok) {
+        document.getElementById('successMsg').style.display = 'block';
+        form.reset();
+        document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        alert('Oops! Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      alert('Oops! Something went wrong. Please try again.');
+    }
+  }
+</script>
+
+</body>
+</html>
